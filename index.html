@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AstraNotes Premium Study Workspace</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#0d1117;
+    --card:#161b22;
+    --border:#30363d;
+    --text:#f0f6fc;
+    --muted:#8b949e;
+    --accent:#2f81f7;
+    --accent2:#238636;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow:hidden;
+}
+
+.topbar{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:1000;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    padding:12px;
+    background:rgba(13,17,23,0.95);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    flex-wrap:wrap;
+}
+
+.btn{
+    border:none;
+    padding:12px 18px;
+    border-radius:14px;
+    cursor:pointer;
+    color:white;
+    font-size:15px;
+    font-weight:600;
+    transition:0.25s ease;
+}
+
+.btn:hover{
+    transform:translateY(-2px) scale(1.02);
+}
+
+.primary{
+    background:var(--accent);
+}
+
+.green{
+    background:var(--accent2);
+}
+
+.dark{
+    background:#21262d;
+}
+
+.search{
+    flex:1;
+    min-width:200px;
+    height:46px;
+    border:none;
+    outline:none;
+    border-radius:14px;
+    padding:0 16px;
+    background:#21262d;
+    color:white;
+    font-size:15px;
+}
+
+.zoom{
+    color:var(--muted);
+    font-weight:600;
+}
+
+.container{
+    position:absolute;
+    top:82px;
+    left:0;
+    right:0;
+    bottom:0;
+    overflow:auto;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
+    padding:25px;
+}
+
+.wrapper{
+    max-width:1200px;
+    margin:auto;
+    transform-origin:top center;
+    transition:transform 0.12s linear;
+}
+
+.editorCard,
+.outputCard{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:28px;
+    padding:22px;
+    margin-bottom:25px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.3);
+}
+
+.cardTitle{
+    font-size:24px;
+    margin-bottom:16px;
+    font-weight:700;
+}
+
+textarea{
+    width:100%;
+    min-height:420px;
+    background:#0d1117;
+    border:1px solid var(--border);
+    border-radius:20px;
+    resize:vertical;
+    outline:none;
+    color:white;
+    padding:22px;
+    line-height:1.9;
+    font-size:17px;
+    font-family:'Poppins',sans-serif;
+}
+
+.output{
+    line-height:2;
+    font-size:18px;
+    word-wrap:break-word;
+}
+
+.output h1{
+    font-size:40px;
+    margin-top:40px;
+    margin-bottom:18px;
+    color:#58a6ff;
+    border-bottom:2px solid #1f6feb;
+    padding-bottom:10px;
+}
+
+.output h2{
+    margin-top:30px;
+    margin-bottom:15px;
+    font-size:28px;
+    color:#79c0ff;
+}
+
+.output h3{
+    margin-top:20px;
+    margin-bottom:12px;
+    font-size:22px;
+    color:#a5d6ff;
+}
+
+.output p{
+    margin-bottom:16px;
+    color:#e6edf3;
+}
+
+.output ul{
+    margin-left:28px;
+    margin-bottom:18px;
+}
+
+.output li{
+    margin-bottom:10px;
+}
+
+.highlight{
+    background:yellow;
+    color:black;
+    padding:2px 4px;
+    border-radius:5px;
+}
+
+.toc{
+    background:#0d1117;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:25px;
+}
+
+.toc h2{
+    margin-bottom:12px;
+}
+
+.toc a{
+    display:block;
+    color:#58a6ff;
+    text-decoration:none;
+    margin-bottom:10px;
+}
+
+.toc a:hover{
+    text-decoration:underline;
+}
+
+.info{
+    color:var(--muted);
+    font-size:14px;
+    margin-top:10px;
+}
+
+@media(max-width:700px){
+
+    .container{
+        top:145px;
+        padding:14px;
+    }
+
+    .cardTitle{
+        font-size:20px;
+    }
+
+    .output h1{
+        font-size:30px;
+    }
+
+    .output h2{
+        font-size:24px;
+    }
+
+    .output{
+        font-size:16px;
+    }
+
+    textarea{
+        font-size:15px;
+        min-height:300px;
+    }
+
+    .btn{
+        flex:1;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+
+<button class="btn primary" onclick="newNote()">New Note</button>
+<button class="btn primary" onclick="formatNotes()">Format Notes</button>
+<button class="btn green" onclick="saveNote()">Save Note</button>
+<button class="btn dark" onclick="renameNote()">Rename</button>
+<button class="btn dark" onclick="deleteNote()">Delete</button>
+<button class="btn primary" onclick="openReaderMode()">Reader Mode</button>
+<button class="btn dark" onclick="zoomIn()">＋ Zoom</button>
+<button class="btn dark" onclick="zoomOut()">－ Zoom</button>
+<button class="btn dark" onclick="resetZoom()">Reset</button>
+
+<input type="text" class="search" id="searchBox" placeholder="Search in notes..." oninput="searchNotes()">
+
+<div class="zoom" id="zoomText">100%</div>
+
+<select id="savedNotes" class="search" style="max-width:260px;height:46px;flex:unset;background:#161b22;border:1px solid #30363d;font-weight:600;" onchange="loadSavedNote()">
+<option value="">Saved Notes</option>
+</select>
+
+</div>
+
+<div class="container">
+<div class="wrapper" id="wrapper">
+
+<div class="editorCard">
+<div class="cardTitle">Premium Study Workspace</div>
+
+<textarea id="inputNotes" placeholder="Create a new note to start writing..."></textarea>
+
+<div class="info">
+• Create unlimited notes
+<br>
+• Save and reopen anytime
+<br>
+• Smooth full-screen reader mode
+<br>
+• 1% precision zoom
+<br>
+• Mobile + PC optimized
+<br>
+• Ultra smooth scrolling
+<br>
+• Auto formatting
+<br>
+• Works beautifully as your personal study website
+</div>
+</div>
+
+<div class="toc" id="toc" style="display:none">
+<h2>Table of Contents</h2>
+<div id="tocLinks"></div>
+</div>
+
+<div class="outputCard">
+<div class="cardTitle">Formatted Notes</div>
+<div class="output" id="output"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let readerWindow = null;
+let currentNoteName = '';
+let autoSaveTimer = null;
+
+const inputNotes = document.getElementById('inputNotes');
+const output = document.getElementById('output');
+const toc = document.getElementById('toc');
+const tocLinks = document.getElementById('tocLinks');
+const wrapper = document.getElementById('wrapper');
+const zoomText = document.getElementById('zoomText');
+
+let zoomLevel = 1;
+
+inputNotes.value = localStorage.getItem('smart_notes_data') || '';
+
+if(inputNotes.value.trim()){
+    formatNotes();
+}
+
+inputNotes.addEventListener('input',()=>{
+
+    clearTimeout(autoSaveTimer);
+
+    autoSaveTimer = setTimeout(()=>{
+
+        if(currentNoteName){
+
+            const notes = JSON.parse(localStorage.getItem('saved_study_notes') || '{}');
+
+            notes[currentNoteName] = {
+                content: inputNotes.value,
+                date: new Date().toLocaleString()
+            };
+
+            localStorage.setItem('saved_study_notes',JSON.stringify(notes));
+        }
+
+        localStorage.setItem('smart_notes_data',inputNotes.value);
+
+    },400);
+
+});
+
+loadSavedNotes();
+
+function escapeHtml(text){
+    return text
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
+function isHeading(line){
+    return (
+        line.length < 70 &&
+        !line.endsWith('.') &&
+        !line.includes(':') &&
+        line === line.toUpperCase()
+    ) || (
+        line.length < 55 &&
+        /^[A-Z]/.test(line)
+    );
+}
+
+function formatNotes(){
+
+    let text = inputNotes.value.trim();
+
+    if(!text){
+        output.innerHTML = '<p>No notes yet.</p>';
+        return;
+    }
+
+    const lines = text.split('\n');
+
+    let html = '';
+    let tocHTML = '';
+
+    let headingCount = 0;
+
+    lines.forEach((rawLine,index)=>{
+
+        let line = rawLine.trim();
+
+        if(!line){
+            html += '<br>';
+            return;
+        }
+
+        line = escapeHtml(line);
+
+        if(isHeading(line)){
+
+            headingCount++;
+
+            const id = 'heading_' + headingCount;
+
+            if(headingCount === 1){
+                html += `<h1 id="${id}">${line}</h1>`;
+            }
+            else if(line.length < 25){
+                html += `<h2 id="${id}">${line}</h2>`;
+            }
+            else{
+                html += `<h3 id="${id}">${line}</h3>`;
+            }
+
+            tocHTML += `<a href="#${id}">${line}</a>`;
+
+            return;
+        }
+
+        if(
+            line.startsWith('-') ||
+            line.startsWith('•') ||
+            line.startsWith('*') ||
+            /^\d+\./.test(line)
+        ){
+
+            line = line
+            .replace(/^[-•*]\s*/, '')
+            .replace(/^\d+\.\s*/, '');
+
+            html += `<ul><li>${line}</li></ul>`;
+            return;
+        }
+
+        if(line.includes(':')){
+
+            const parts = line.split(':');
+
+            if(parts[0].length < 35){
+                html += `
+                <p>
+                <strong>${parts[0]}:</strong>
+                ${parts.slice(1).join(':')}
+                </p>
+                `;
+                return;
+            }
+        }
+
+        html += `<p>${line}</p>`;
+
+    });
+
+    output.innerHTML = html;
+
+    if(tocHTML){
+        toc.style.display = 'block';
+        tocLinks.innerHTML = tocHTML;
+    }
+    else{
+        toc.style.display = 'none';
+    }
+}
+
+function zoomIn(){
+    zoomLevel += 0.1;
+    updateZoom();
+}
+
+function zoomOut(){
+    zoomLevel -= 0.1;
+
+    if(zoomLevel < 0.5){
+        zoomLevel = 0.5;
+    }
+
+    updateZoom();
+}
+
+function resetZoom(){
+    zoomLevel = 1;
+    updateZoom();
+}
+
+function updateZoom(){
+    wrapper.style.transform = `scale(${zoomLevel})`;
+    zoomText.innerText = Math.round(zoomLevel * 100) + '%';
+}
+
+function searchNotes(){
+
+    formatNotes();
+
+    const query = document.getElementById('searchBox').value.trim();
+
+    if(!query) return;
+
+    const regex = new RegExp(query,'gi');
+
+    output.innerHTML = output.innerHTML.replace(regex, match => {
+        return `<span class="highlight">${match}</span>`;
+    });
+}
+
+function saveNote(){
+
+    if(!currentNoteName){
+
+        const name = prompt('Enter note name');
+
+        if(!name) return;
+
+        currentNoteName = name;
+    }
+
+    const notes = JSON.parse(localStorage.getItem('saved_study_notes') || '{}');
+
+    notes[currentNoteName] = {
+        content: inputNotes.value,
+        date: new Date().toLocaleString()
+    };
+
+    localStorage.setItem('saved_study_notes',JSON.stringify(notes));
+
+    loadSavedNotes();
+
+    document.getElementById('savedNotes').value = currentNoteName;
+
+    const saveBtn = document.querySelector('.green');
+
+    saveBtn.innerText = 'Saved ✓';
+
+    setTimeout(()=>{
+        saveBtn.innerText = 'Save Note';
+    },1200);
+}
+
+function newNote(){
+
+    const name = prompt('Enter new note name');
+
+    if(!name) return;
+
+    currentNoteName = name;
+
+    inputNotes.value = '';
+
+    output.innerHTML = '<p style="opacity:0.7">Start writing your note...</p>';
+
+    const notes = JSON.parse(localStorage.getItem('saved_study_notes') || '{}');
+
+    notes[name] = {
+        content:'',
+        date:new Date().toLocaleString()
+    };
+
+    localStorage.setItem('saved_study_notes',JSON.stringify(notes));
+
+    loadSavedNotes();
+
+    document.getElementById('savedNotes').value = name;
+}
+
+function renameNote(){
+
+    if(!currentNoteName){
+        alert('Open a note first');
+        return;
+    }
+
+    const newName = prompt('Rename note',currentNoteName);
+
+    if(!newName || newName === currentNoteName) return;
+
+    const notes = JSON.parse(localStorage.getItem('saved_study_notes') || '{}');
+
+    notes[newName] = notes[currentNoteName];
+
+    delete notes[currentNoteName];
+
+    currentNoteName = newName;
+
+    localStorage.setItem('saved_study_notes',JSON.stringify(notes));
+
+    loadSavedNotes();
+
+    document.getElementById('savedNotes').value = newName;
+}
+
+function deleteNote(){
+
+    if(!currentNoteName){
+        alert('Open a note first');
+        return;
+    }
+
+    const confirmDelete = confirm('Delete this note permanently?');
+
+    if(!confirmDelete) return;
+
+    const notes = JSON.parse(localStorage.getItem('saved_study_notes') || '{}');
+
+    delete notes[currentNoteName];
+
+    localStorage.setItem('saved_study_notes',JSON.stringify(notes));
+
+    currentNoteName = '';
+
+    inputNotes.value = '';
+
+    output.innerHTML = '<p style="opacity:0.7">Create a new note to begin.</p>';
+
+    loadSavedNotes();
+}
+
+
+
+function loadSavedNotes(){
+
+    const select = document.getElementById('savedNotes');
+
+    const notes = JSON.parse(localStorage.getItem('saved_study_notes') || '{}');
+
+    select.innerHTML = '<option value="">Saved Notes</option>';
+
+    Object.keys(notes).forEach(name=>{
+
+        const option = document.createElement('option');
+
+        option.value = name;
+        option.innerText = name;
+
+        select.appendChild(option);
+    });
+}
+
+function loadSavedNote(){
+
+    const select = document.getElementById('savedNotes');
+
+    const notes = JSON.parse(localStorage.getItem('saved_study_notes') || '{}');
+
+    const selected = select.value;
+
+    if(!selected) return;
+
+    currentNoteName = selected;
+
+    inputNotes.value = notes[selected].content;
+
+    localStorage.setItem('smart_notes_data',inputNotes.value);
+
+    formatNotes();
+}
+
+function openReaderMode(){
+
+    formatNotes();
+
+    const readerHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Reader Mode</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#090c10;color:white;font-family:Poppins,sans-serif;overflow:auto;-webkit-overflow-scrolling:touch}.readerTop{position:fixed;top:0;left:0;right:0;background:rgba(9,12,16,0.72);backdrop-filter:blur(18px);padding:14px;display:flex;gap:10px;align-items:center;z-index:1000;border-bottom:1px solid #222}.readerBtn{background:#161b22;color:white;border:none;border-radius:14px;padding:12px 18px;cursor:pointer;font-size:15px;font-weight:600;transition:0.15s}.readerBtn:hover{transform:scale(1.03)}.readerContent{max-width:1000px;margin:auto;padding:110px 35px 120px;line-height:2.3;font-size:20px;transition:transform 0.05s linear;transform-origin:top center;will-change:transform}h1{color:#58a6ff;font-size:52px;margin-top:60px;margin-bottom:24px}h2{color:#79c0ff;font-size:36px;margin-top:45px;margin-bottom:20px}h3{color:#a5d6ff;font-size:28px;margin-top:35px;margin-bottom:15px}p,li{color:#f0f6fc}ul{margin-left:28px}#zoomLevel{color:#8b949e;font-weight:600}@media(max-width:700px){.readerContent{font-size:18px;padding:100px 18px 100px}h1{font-size:36px}h2{font-size:30px}h3{font-size:24px}}</style></head><body><div class="readerTop"><button class="readerBtn" onclick="zoomIn()">＋</button><button class="readerBtn" onclick="zoomOut()">－</button><button class="readerBtn" onclick="resetZoom()">Reset</button><button class="readerBtn" onclick="toggleFullscreen()">Fullscreen</button><div id="zoomLevel">100%</div></div><div class="readerContent" id="readerContent">${output.innerHTML}</div><script>let zoom=1;function applyZoom(){document.getElementById('readerContent').style.transform='scale('+zoom+')';document.getElementById('zoomLevel').innerText=Math.round(zoom*100)+'%'}function zoomIn(){zoom+=0.01;applyZoom()}function zoomOut(){zoom-=0.01;if(zoom<0.5)zoom=0.5;applyZoom()}function resetZoom(){zoom=1;applyZoom()}function toggleFullscreen(){if(!document.fullscreenElement){document.documentElement.requestFullscreen()}else{document.exitFullscreen()}}document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='+'){e.preventDefault();zoomIn()}if(e.ctrlKey&&e.key==='-'){e.preventDefault();zoomOut()}})<\/script></body></html>`;
+
+    readerWindow = window.open('','_blank');
+    readerWindow.document.write(readerHTML);
+    readerWindow.document.close();
+}
+
+
+window.addEventListener('keydown',(e)=>{
+
+    if(e.ctrlKey && e.key === '+'){
+        e.preventDefault();
+        zoomIn();
+    }
+
+    if(e.ctrlKey && e.key === '-'){
+        e.preventDefault();
+        zoomOut();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
