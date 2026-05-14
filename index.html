@@ -35,7 +35,13 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            transition: background-color 0.3s, color 0.3s;
+            /* Smooth color transitions */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        html {
+            /* Smooth scrolling for the whole page */
+            scroll-behavior: smooth;
         }
 
         body {
@@ -77,10 +83,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: background-color 0.2s ease, transform 0.1s ease;
         }
 
         button:hover {
             background-color: var(--btn-hover);
+        }
+        
+        button:active {
+            transform: scale(0.95);
         }
 
         #menu-btn {
@@ -99,10 +110,18 @@
             background-color: var(--sidebar-bg);
             box-shadow: 2px 0 5px var(--header-shadow);
             overflow-y: auto;
-            transition: left 0.3s ease;
+            /* Smooth sliding and scrolling */
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            scroll-behavior: smooth;
             z-index: 999;
             padding-top: 10px;
         }
+
+        /* Custom Scrollbar for a cleaner look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--btn-bg); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--btn-hover); }
 
         #sidebar.open {
             left: 0;
@@ -117,10 +136,12 @@
             cursor: pointer;
             border-bottom: 1px solid var(--btn-bg);
             font-size: 16px;
+            transition: background-color 0.2s ease, padding-left 0.2s ease;
         }
 
         #file-list li:hover {
             background-color: var(--sidebar-hover);
+            padding-left: 25px; /* Slight indent on hover for smoothness */
         }
 
         .error-msg {
@@ -131,7 +152,8 @@
 
         /* Overlay for mobile */
         #overlay {
-            display: none;
+            opacity: 0;
+            pointer-events: none;
             position: fixed;
             top: 60px;
             left: 0;
@@ -139,9 +161,11 @@
             height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 998;
+            transition: opacity 0.3s ease;
         }
         #overlay.active {
-            display: block;
+            opacity: 1;
+            pointer-events: all;
         }
 
         /* Main Content */
@@ -151,13 +175,14 @@
             max-width: 900px;
             margin-left: auto;
             margin-right: auto;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s ease;
         }
 
         #content-area {
             white-space: pre-wrap;
             word-wrap: break-word;
             font-size: 100%; 
-            line-height: 1.6;
+            line-height: 1.8; /* Slightly higher line-height for better readability */
             transition: font-size 0.2s ease;
         }
 
@@ -166,7 +191,7 @@
             #sidebar { left: 0; }
             main { margin-left: 250px; max-width: calc(100% - 250px); padding: 40px; }
             #menu-btn { display: none; }
-            #overlay.active { display: none; }
+            #overlay.active { opacity: 0; pointer-events: none; }
             body.sidebar-closed #sidebar { left: -250px; }
             body.sidebar-closed main { margin-left: auto; max-width: 900px; }
             body.sidebar-closed #menu-btn { display: block; }
@@ -192,7 +217,7 @@
 
     <nav id="sidebar">
         <ul id="file-list">
-            <li>Loading files...</li>
+            <li>Loading menu...</li>
         </ul>
     </nav>
 
@@ -202,9 +227,10 @@
 
     <script>
         // ==========================================
-        // CONFIGURATION: YOUR REPOSITORY LINK
+        // CONFIGURATION
         // ==========================================
         const REPO_LINK = "https://github.com/forpc1428-eng/STUDY-WORKSPACE";
+        const CACHE_PREFIX = "study_notes_"; // Prefix for browser saving
         // ==========================================
 
         // DOM Elements
@@ -236,7 +262,6 @@
         // --- Extract Username and Repo from Link ---
         function getRepoInfo() {
             try {
-                // Remove trailing slash if exists, and split by '/'
                 const cleanLink = REPO_LINK.replace(/\/$/, ''); 
                 const parts = cleanLink.split('/');
                 const repo = parts.pop();
@@ -247,64 +272,81 @@
             }
         }
 
-        // --- Fetch Files from GitHub API ---
-        async function fetchFileList() {
-            const repoInfo = getRepoInfo();
-            
-            if (!repoInfo || !repoInfo.username || !repoInfo.repo || repoInfo.username === "USERNAME") {
-                fileList.innerHTML = '<li class="error-msg">Error: Please check your GitHub repository link.</li>';
+        // --- Render the Sidebar Menu ---
+        function renderMenu(files) {
+            fileList.innerHTML = '';
+            if (files.length === 0) {
+                fileList.innerHTML = '<li>No .txt files found.</li>';
                 return;
             }
+            files.forEach(file => {
+                const li = document.createElement('li');
+                li.textContent = file.name.replace('.txt', ''); 
+                li.onclick = () => loadFile(file); // Pass the whole file object
+                fileList.appendChild(li);
+            });
+        }
 
-            // By not specifying a branch, GitHub automatically uses your default branch (main/master)
+        // --- Fetch Files List (With Caching) ---
+        async function fetchFileList() {
+            const repoInfo = getRepoInfo();
+            if (!repoInfo) return;
+
+            // 1. Instantly load the menu from browser memory (if it exists)
+            const cachedMenu = localStorage.getItem(CACHE_PREFIX + 'menu');
+            if (cachedMenu) {
+                renderMenu(JSON.parse(cachedMenu));
+            }
+
+            // 2. Fetch from GitHub in the background to see if you added new files
             const apiUrl = `https://api.github.com/repos/${repoInfo.username}/${repoInfo.repo}/contents/`;
-            
             try {
                 const response = await fetch(apiUrl);
-                
-                if (response.status === 404) {
-                    throw new Error("Repository not found. Is it set to Private? It must be Public.");
-                } else if (!response.ok) {
-                    throw new Error("GitHub API error. Check your repo link.");
-                }
+                if (!response.ok) throw new Error("API error");
                 
                 const data = await response.json();
-                
-                // Filter only .txt files
                 const txtFiles = data.filter(file => file.name.endsWith('.txt'));
                 
-                fileList.innerHTML = ''; // Clear loading text
-
-                if (txtFiles.length === 0) {
-                    fileList.innerHTML = '<li>No .txt files found in this repo. Please upload some!</li>';
-                    return;
+                // 3. If the GitHub files are different from the saved ones, update the screen and memory
+                if (JSON.stringify(txtFiles) !== cachedMenu) {
+                    localStorage.setItem(CACHE_PREFIX + 'menu', JSON.stringify(txtFiles));
+                    renderMenu(txtFiles);
                 }
-
-                txtFiles.forEach(file => {
-                    const li = document.createElement('li');
-                    li.textContent = file.name.replace('.txt', ''); // Remove .txt for display
-                    li.onclick = () => loadFile(file.download_url);
-                    fileList.appendChild(li);
-                });
-
             } catch (error) {
-                console.error(error);
-                fileList.innerHTML = `<li class="error-msg">${error.message}</li>`;
+                if (!cachedMenu) fileList.innerHTML = `<li class="error-msg">Failed to load menu. Are you offline?</li>`;
             }
         }
 
-        // --- Load File Content ---
-        async function loadFile(url) {
-            contentArea.textContent = "Loading note...";
-            if (window.innerWidth < 768) toggleSidebar(); // Close sidebar on mobile after clicking
+        // --- Load File Content (Zero Delay + Background Updating) ---
+        async function loadFile(file) {
+            if (window.innerWidth < 768) toggleSidebar(); // Smoothly close mobile sidebar
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top smoothly
 
+            const cacheKey = CACHE_PREFIX + 'file_' + file.name;
+            const cachedText = localStorage.getItem(cacheKey);
+
+            // 1. Instantly show saved text from browser memory
+            if (cachedText) {
+                contentArea.textContent = cachedText;
+            } else {
+                contentArea.textContent = "Fetching note securely...";
+            }
+
+            // 2. Silently fetch the newest version from GitHub in the background
             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error("Failed to load text file.");
-                const text = await response.text();
-                contentArea.textContent = text;
+                // We add ?t=... to force GitHub to bypass its own cache and give us the absolute newest version
+                const response = await fetch(file.download_url + '?t=' + new Date().getTime());
+                if (!response.ok) throw new Error("Failed to load");
+                
+                const latestText = await response.text();
+                
+                // 3. Update the screen ONLY if you edited the text file on GitHub since last viewing
+                if (latestText !== cachedText) {
+                    contentArea.textContent = latestText;
+                    localStorage.setItem(cacheKey, latestText); // Save new version to memory
+                }
             } catch (error) {
-                contentArea.textContent = "Error loading note content.";
+                if (!cachedText) contentArea.textContent = "Error loading note. Please check your connection.";
             }
         }
 
@@ -321,29 +363,27 @@
             }
         });
 
-        // --- Theme Logic ---
-        const currentTheme = localStorage.getItem('theme') || 'light';
+        // --- Theme Logic (Saves to memory) ---
+        const currentTheme = localStorage.getItem(CACHE_PREFIX + 'theme') || 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
 
         themeToggleBtn.addEventListener('click', () => {
             let theme = document.documentElement.getAttribute('data-theme');
             let newTheme = theme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
+            localStorage.setItem(CACHE_PREFIX + 'theme', newTheme);
         });
 
         // --- Fullscreen (Reading Mode) Logic ---
         fullscreenBtn.addEventListener('click', () => {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    alert(`Error: ${err.message}`);
-                });
+                document.documentElement.requestFullscreen().catch(() => {});
             } else {
                 document.exitFullscreen();
             }
         });
 
-        // Initialize
+        // Initialize App
         fetchFileList();
     </script>
 </body>
