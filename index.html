@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Notes</title>
+    <title>My Study Notes</title>
     <style>
         :root {
             /* Light Theme */
@@ -178,7 +178,7 @@
     <header>
         <div class="header-left">
             <button id="menu-btn">☰</button>
-            <h2 id="site-title">My Notes</h2>
+            <h2 id="site-title">My Study Notes</h2>
         </div>
         <div class="header-right">
             <button id="zoom-out" title="Zoom Out">-</button>
@@ -202,9 +202,9 @@
 
     <script>
         // ==========================================
-        // CONFIGURATION: JUST PASTE YOUR GITHUB LINK BELOW
+        // CONFIGURATION: YOUR REPOSITORY LINK
         // ==========================================
-        const REPO_LINK = "https://github.com/USERNAME/REPOSITORY_NAME";
+        const REPO_LINK = "https://github.com/forpc1428-eng/STUDY-WORKSPACE";
         // ==========================================
 
         // DOM Elements
@@ -252,12 +252,12 @@
             const repoInfo = getRepoInfo();
             
             if (!repoInfo || !repoInfo.username || !repoInfo.repo || repoInfo.username === "USERNAME") {
-                fileList.innerHTML = '<li class="error-msg">Error: Please paste your real GitHub repository link into the REPO_LINK variable in the code.</li>';
+                fileList.innerHTML = '<li class="error-msg">Error: Please check your GitHub repository link.</li>';
                 return;
             }
 
             // By not specifying a branch, GitHub automatically uses your default branch (main/master)
-            const apiUrl = `https://github.com/forpc1428-eng/STUDY-WORKSPACE`;
+            const apiUrl = `https://api.github.com/repos/${repoInfo.username}/${repoInfo.repo}/contents/`;
             
             try {
                 const response = await fetch(apiUrl);
@@ -276,7 +276,7 @@
                 fileList.innerHTML = ''; // Clear loading text
 
                 if (txtFiles.length === 0) {
-                    fileList.innerHTML = '<li>No .txt files found in this repo.</li>';
+                    fileList.innerHTML = '<li>No .txt files found in this repo. Please upload some!</li>';
                     return;
                 }
 
