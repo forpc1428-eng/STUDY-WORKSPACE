@@ -4,225 +4,301 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Study Notes</title>
+    <!-- Premium Font for UI and Reading -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            /* Light Theme */
-            --bg-color: #f4f4f9;
-            --text-color: #333333;
-            --header-bg: #ffffff;
-            --header-shadow: rgba(0, 0, 0, 0.1);
-            --sidebar-bg: #ffffff;
-            --sidebar-hover: #e0e0e0;
-            --btn-bg: #eeeeee;
-            --btn-hover: #dddddd;
-            --error-color: #d9534f;
+            /* OBSIDIAN GLASS THEME (Default) */
+            --bg-base: #050505;
+            --glass-bg: rgba(20, 20, 24, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            
+            --text-main: #e2e2e6; /* Graphite Light */
+            --text-muted: #8b8b98; /* Graphite Dark */
+            
+            --btn-bg: rgba(255, 255, 255, 0.05);
+            --btn-hover: rgba(255, 255, 255, 0.1);
+            
+            --accent-glow: rgba(255, 255, 255, 0.15);
+            --accent-active: #ffffff;
+            --accent-text: #000000;
+            
+            --radius-large: 24px;
+            --radius-pill: 50px;
         }
 
-        [data-theme="dark"] {
-            /* Dark Theme */
-            --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --header-bg: #1e1e1e;
-            --header-shadow: rgba(0, 0, 0, 0.5);
-            --sidebar-bg: #1e1e1e;
-            --sidebar-hover: #333333;
-            --btn-bg: #333333;
-            --btn-hover: #444444;
-            --error-color: #ff6666;
+        [data-theme="pearl"] {
+            /* PEARL GLASS THEME (Light Mode) */
+            --bg-base: #f0f0f5;
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            
+            --text-main: #1a1a1c;
+            --text-muted: #6b6b78;
+            
+            --btn-bg: rgba(0, 0, 0, 0.05);
+            --btn-hover: rgba(0, 0, 0, 0.1);
+            
+            --accent-glow: rgba(0, 0, 0, 0.1);
+            --accent-active: #000000;
+            --accent-text: #ffffff;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            /* Smooth color transitions */
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, transform 0.2s ease;
         }
 
-        html {
-            /* Smooth scrolling for the whole page */
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-base);
+            /* Ambient glowing orbs in the background */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(70, 50, 120, 0.15), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(50, 90, 120, 0.15), transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
             overflow-x: hidden;
+            letter-spacing: -0.01em; /* Modern tight spacing */
         }
 
-        /* Header / Navbar */
+        /* Ultra-sleek Scrollbars */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--btn-hover); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* Glassmorphism Reusable Class */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        /* FLOATING HEADER */
         header {
             position: fixed;
-            top: 0;
-            width: 100%;
+            top: 15px;
+            left: 15px;
+            right: 15px;
             height: 60px;
-            background-color: var(--header-bg);
-            box-shadow: 0 2px 5px var(--header-shadow);
+            border-radius: var(--radius-pill);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 15px;
+            padding: 0 25px;
             z-index: 1000;
         }
 
-        .header-left, .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        #site-title { 
+            font-weight: 500; 
+            font-size: 1.1rem; 
+            letter-spacing: -0.02em;
         }
 
+        .header-left, .header-right { display: flex; align-items: center; gap: 8px; }
+
+        /* Pill Buttons */
         button {
             background-color: var(--btn-bg);
-            color: var(--text-color);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
+            color: var(--text-main);
+            border: 1px solid transparent;
+            padding: 8px 16px;
+            border-radius: var(--radius-pill);
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s ease, transform 0.1s ease;
         }
 
-        button:hover {
-            background-color: var(--btn-hover);
+        button:hover { 
+            background-color: var(--btn-hover); 
+            border-color: var(--accent-glow);
         }
-        
-        button:active {
-            transform: scale(0.95);
-        }
+        button:active { transform: scale(0.95); }
 
-        #menu-btn {
-            font-size: 24px;
-            background: none;
-            padding: 5px;
-        }
+        #menu-btn { font-size: 18px; padding: 8px 12px; }
 
-        /* Sidebar */
+        /* Curved Zoom Controls */
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            background-color: var(--btn-bg);
+            border-radius: var(--radius-pill);
+            padding: 2px;
+        }
+        .zoom-controls button { background: none; border-radius: var(--radius-pill); padding: 6px 12px; }
+        .zoom-controls button:hover { background-color: var(--btn-hover); }
+        #zoom-display { font-size: 12px; font-weight: 600; min-width: 45px; text-align: center; color: var(--text-muted); }
+
+        /* FLOATING SIDEBAR */
         #sidebar {
             position: fixed;
-            top: 60px;
-            left: -300px;
-            width: 250px;
-            height: calc(100vh - 60px);
-            background-color: var(--sidebar-bg);
-            box-shadow: 2px 0 5px var(--header-shadow);
-            overflow-y: auto;
-            /* Smooth sliding and scrolling */
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            scroll-behavior: smooth;
+            top: 90px;
+            left: -320px;
+            width: 280px;
+            height: calc(100vh - 105px);
+            border-radius: var(--radius-large);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 999;
-            padding-top: 10px;
         }
+        #sidebar.open { left: 15px; }
 
-        /* Custom Scrollbar for a cleaner look */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: var(--btn-bg); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--btn-hover); }
-
-        #sidebar.open {
-            left: 0;
-        }
-
-        #file-list {
-            list-style: none;
-        }
-
-        #file-list li {
-            padding: 15px 20px;
-            cursor: pointer;
-            border-bottom: 1px solid var(--btn-bg);
-            font-size: 16px;
-            transition: background-color 0.2s ease, padding-left 0.2s ease;
-        }
-
-        #file-list li:hover {
-            background-color: var(--sidebar-hover);
-            padding-left: 25px; /* Slight indent on hover for smoothness */
-        }
-
-        .error-msg {
-            color: var(--error-color);
-            padding: 15px 20px;
-            font-size: 14px;
-        }
-
-        /* Overlay for mobile */
-        #overlay {
-            opacity: 0;
-            pointer-events: none;
-            position: fixed;
-            top: 60px;
-            left: 0;
+        /* Search Bar */
+        .search-container { padding: 20px; border-bottom: 1px solid var(--glass-border); }
+        #search-bar {
             width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 998;
-            transition: opacity 0.3s ease;
+            padding: 12px 20px;
+            border-radius: var(--radius-pill);
+            border: 1px solid var(--glass-border);
+            background-color: var(--btn-bg);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
-        #overlay.active {
-            opacity: 1;
-            pointer-events: all;
+        #search-bar::placeholder { color: var(--text-muted); }
+        #search-bar:focus { border-color: var(--text-muted); background-color: var(--btn-hover); }
+
+        /* File List */
+        .sidebar-scroll-area { overflow-y: auto; flex-grow: 1; padding: 10px; }
+        #file-list { list-style: none; }
+        #file-list li {
+            padding: 12px 18px;
+            cursor: pointer;
+            border-radius: 14px;
+            margin-bottom: 4px;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+        #file-list li:hover:not(.active) { background-color: var(--btn-bg); color: var(--text-main); transform: translateX(4px); }
+        
+        /* Active Note Highlight (Obsidian style - high contrast) */
+        #file-list li.active { 
+            background-color: var(--accent-active); 
+            color: var(--accent-text); 
+            font-weight: 500; 
+            box-shadow: 0 4px 15px var(--accent-glow);
         }
 
-        /* Main Content */
+        .error-msg { color: #ff6b6b; padding: 15px; font-size: 13px; }
+
+        /* Mobile Overlay */
+        #overlay {
+            opacity: 0; pointer-events: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 998; backdrop-filter: blur(4px); transition: opacity 0.4s ease;
+        }
+        #overlay.active { opacity: 1; pointer-events: all; }
+
+        /* MAIN CONTENT AREA */
         main {
-            margin-top: 60px;
-            padding: 20px;
+            margin-top: 90px;
+            padding: 0 15px 15px 15px;
+            margin-left: auto; margin-right: auto;
             max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s ease;
+            transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Glass Note Card */
+        .note-card {
+            border-radius: var(--radius-large);
+            padding: 40px;
+            min-height: calc(100vh - 105px);
         }
 
         #content-area {
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            white-space: pre-wrap; word-wrap: break-word;
             font-size: 100%; 
-            line-height: 1.8; /* Slightly higher line-height for better readability */
-            transition: font-size 0.2s ease;
+            line-height: 1.8;
+            font-weight: 300; /* Sleeker reading weight */
+            color: var(--text-main);
+        }
+
+        /* Elegant Fade/Slide in */
+        .fade-in { animation: glideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes glideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Desktop Adjustments */
         @media (min-width: 768px) {
-            #sidebar { left: 0; }
-            main { margin-left: 250px; max-width: calc(100% - 250px); padding: 40px; }
+            #sidebar { left: 15px; }
+            main { margin-left: 310px; max-width: calc(100% - 310px); }
+            .note-card { padding: 50px 60px; max-width: 850px; margin: 0 auto; }
             #menu-btn { display: none; }
             #overlay.active { opacity: 0; pointer-events: none; }
-            body.sidebar-closed #sidebar { left: -250px; }
+            
+            /* If toggled closed on desktop */
+            body.sidebar-closed #sidebar { left: -320px; }
             body.sidebar-closed main { margin-left: auto; max-width: 900px; }
-            body.sidebar-closed #menu-btn { display: block; }
+            body.sidebar-closed #menu-btn { display: flex; }
+        }
+
+        /* Mobile Tweaks */
+        @media (max-width: 480px) {
+            header { padding: 0 15px; }
+            .header-right { gap: 4px; }
+            button { padding: 6px 12px; font-size: 12px; }
+            .zoom-controls button { padding: 6px 10px; }
+            #site-title { display: none; } 
+            .note-card { padding: 25px 20px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
+    <header class="glass-panel">
         <div class="header-left">
             <button id="menu-btn">☰</button>
-            <h2 id="site-title">My Study Notes</h2>
+            <h2 id="site-title">StudySpace</h2>
         </div>
         <div class="header-right">
-            <button id="zoom-out" title="Zoom Out">-</button>
-            <button id="zoom-in" title="Zoom In">+</button>
-            <button id="theme-toggle" title="Toggle Theme">🌓</button>
+            <button id="copy-btn" title="Copy Note">Copy</button>
+            <div class="zoom-controls">
+                <button id="zoom-out" title="Zoom Out">-</button>
+                <span id="zoom-display">100%</span>
+                <button id="zoom-in" title="Zoom In">+</button>
+            </div>
+            <button id="theme-toggle" title="Toggle Theme">◐</button>
             <button id="fullscreen-btn" title="Reading Mode">⛶</button>
         </div>
     </header>
 
     <div id="overlay"></div>
 
-    <nav id="sidebar">
-        <ul id="file-list">
-            <li>Loading menu...</li>
-        </ul>
+    <nav id="sidebar" class="glass-panel">
+        <div class="search-container">
+            <input type="text" id="search-bar" placeholder="Search notes...">
+        </div>
+        <div class="sidebar-scroll-area">
+            <ul id="file-list">
+                <li style="color: var(--text-muted); text-align: center; padding-top: 20px;">Initializing core...</li>
+            </ul>
+        </div>
     </nav>
 
     <main>
-        <div id="content-area">Please select a note from the menu on the left.</div>
+        <div class="glass-panel note-card">
+            <div id="content-area">Awaiting note selection...</div>
+        </div>
     </main>
 
     <script>
@@ -230,23 +306,28 @@
         // CONFIGURATION
         // ==========================================
         const REPO_LINK = "https://github.com/forpc1428-eng/STUDY-WORKSPACE";
-        const CACHE_PREFIX = "study_notes_"; // Prefix for browser saving
+        const CACHE_PREFIX = "study_glass_";
         // ==========================================
 
-        // DOM Elements
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
         const menuBtn = document.getElementById('menu-btn');
         const fileList = document.getElementById('file-list');
         const contentArea = document.getElementById('content-area');
+        const searchBar = document.getElementById('search-bar');
+        
         const zoomInBtn = document.getElementById('zoom-in');
         const zoomOutBtn = document.getElementById('zoom-out');
+        const zoomDisplay = document.getElementById('zoom-display');
         const themeToggleBtn = document.getElementById('theme-toggle');
         const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const copyBtn = document.getElementById('copy-btn');
 
         let currentZoom = 100;
+        let currentNoteName = "";
+        let allFiles = [];
 
-        // --- Sidebar Logic ---
+        // --- Sidebar & Search Logic ---
         function toggleSidebar() {
             if (window.innerWidth < 768) {
                 sidebar.classList.toggle('open');
@@ -259,46 +340,53 @@
         menuBtn.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
 
-        // --- Extract Username and Repo from Link ---
+        searchBar.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const listItems = fileList.querySelectorAll('li');
+            listItems.forEach(li => {
+                const text = li.textContent.toLowerCase();
+                li.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+
         function getRepoInfo() {
             try {
                 const cleanLink = REPO_LINK.replace(/\/$/, ''); 
                 const parts = cleanLink.split('/');
-                const repo = parts.pop();
-                const username = parts.pop();
-                return { username, repo };
-            } catch (e) {
-                return null;
-            }
+                return { username: parts[parts.length - 2], repo: parts[parts.length - 1] };
+            } catch (e) { return null; }
         }
 
-        // --- Render the Sidebar Menu ---
         function renderMenu(files) {
+            allFiles = files;
             fileList.innerHTML = '';
             if (files.length === 0) {
-                fileList.innerHTML = '<li>No .txt files found.</li>';
+                fileList.innerHTML = '<li style="text-align:center;">No .txt files found.</li>';
                 return;
             }
             files.forEach(file => {
+                const displayName = file.name.replace('.txt', '');
                 const li = document.createElement('li');
-                li.textContent = file.name.replace('.txt', ''); 
-                li.onclick = () => loadFile(file); // Pass the whole file object
+                li.textContent = displayName;
+                if (displayName === currentNoteName) li.classList.add('active');
+                
+                li.onclick = () => {
+                    document.querySelectorAll('#file-list li').forEach(item => item.classList.remove('active'));
+                    li.classList.add('active');
+                    currentNoteName = displayName;
+                    loadFile(file);
+                };
                 fileList.appendChild(li);
             });
         }
 
-        // --- Fetch Files List (With Caching) ---
         async function fetchFileList() {
             const repoInfo = getRepoInfo();
             if (!repoInfo) return;
 
-            // 1. Instantly load the menu from browser memory (if it exists)
             const cachedMenu = localStorage.getItem(CACHE_PREFIX + 'menu');
-            if (cachedMenu) {
-                renderMenu(JSON.parse(cachedMenu));
-            }
+            if (cachedMenu) renderMenu(JSON.parse(cachedMenu));
 
-            // 2. Fetch from GitHub in the background to see if you added new files
             const apiUrl = `https://api.github.com/repos/${repoInfo.username}/${repoInfo.repo}/contents/`;
             try {
                 const response = await fetch(apiUrl);
@@ -307,74 +395,76 @@
                 const data = await response.json();
                 const txtFiles = data.filter(file => file.name.endsWith('.txt'));
                 
-                // 3. If the GitHub files are different from the saved ones, update the screen and memory
                 if (JSON.stringify(txtFiles) !== cachedMenu) {
                     localStorage.setItem(CACHE_PREFIX + 'menu', JSON.stringify(txtFiles));
                     renderMenu(txtFiles);
                 }
             } catch (error) {
-                if (!cachedMenu) fileList.innerHTML = `<li class="error-msg">Failed to load menu. Are you offline?</li>`;
+                if (!cachedMenu) fileList.innerHTML = `<li class="error-msg">Connection lost.</li>`;
             }
         }
 
-        // --- Load File Content (Zero Delay + Background Updating) ---
         async function loadFile(file) {
-            if (window.innerWidth < 768) toggleSidebar(); // Smoothly close mobile sidebar
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top smoothly
+            if (window.innerWidth < 768) toggleSidebar(); 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+
+            contentArea.classList.remove('fade-in');
+            void contentArea.offsetWidth; 
+            contentArea.classList.add('fade-in');
 
             const cacheKey = CACHE_PREFIX + 'file_' + file.name;
             const cachedText = localStorage.getItem(cacheKey);
 
-            // 1. Instantly show saved text from browser memory
             if (cachedText) {
                 contentArea.textContent = cachedText;
             } else {
-                contentArea.textContent = "Fetching note securely...";
+                contentArea.textContent = "Decrypting text...";
             }
 
-            // 2. Silently fetch the newest version from GitHub in the background
             try {
-                // We add ?t=... to force GitHub to bypass its own cache and give us the absolute newest version
                 const response = await fetch(file.download_url + '?t=' + new Date().getTime());
                 if (!response.ok) throw new Error("Failed to load");
-                
                 const latestText = await response.text();
                 
-                // 3. Update the screen ONLY if you edited the text file on GitHub since last viewing
                 if (latestText !== cachedText) {
                     contentArea.textContent = latestText;
-                    localStorage.setItem(cacheKey, latestText); // Save new version to memory
+                    localStorage.setItem(cacheKey, latestText);
                 }
             } catch (error) {
-                if (!cachedText) contentArea.textContent = "Error loading note. Please check your connection.";
+                if (!cachedText) contentArea.textContent = "Failed to fetch data.";
             }
         }
 
-        // --- Zoom Logic (5% increments) ---
-        zoomInBtn.addEventListener('click', () => {
-            currentZoom += 5;
+        // --- Copy Logic ---
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(contentArea.textContent).then(() => {
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = "Copied!";
+                setTimeout(() => copyBtn.innerHTML = originalText, 2000);
+            });
+        });
+
+        // --- Zoom Logic ---
+        function updateZoom() {
             contentArea.style.fontSize = `${currentZoom}%`;
-        });
+            zoomDisplay.textContent = `${currentZoom}%`;
+        }
 
-        zoomOutBtn.addEventListener('click', () => {
-            if (currentZoom > 50) { 
-                currentZoom -= 5;
-                contentArea.style.fontSize = `${currentZoom}%`;
-            }
-        });
+        zoomInBtn.addEventListener('click', () => { currentZoom += 10; updateZoom(); });
+        zoomOutBtn.addEventListener('click', () => { if (currentZoom > 50) currentZoom -= 10; updateZoom(); });
 
-        // --- Theme Logic (Saves to memory) ---
-        const currentTheme = localStorage.getItem(CACHE_PREFIX + 'theme') || 'light';
+        // --- Theme Logic (Obsidian Glass -> Pearl Glass) ---
+        const currentTheme = localStorage.getItem(CACHE_PREFIX + 'theme') || 'obsidian';
         document.documentElement.setAttribute('data-theme', currentTheme);
 
         themeToggleBtn.addEventListener('click', () => {
             let theme = document.documentElement.getAttribute('data-theme');
-            let newTheme = theme === 'light' ? 'dark' : 'light';
+            let newTheme = theme === 'obsidian' ? 'pearl' : 'obsidian';
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem(CACHE_PREFIX + 'theme', newTheme);
         });
 
-        // --- Fullscreen (Reading Mode) Logic ---
+        // --- Fullscreen ---
         fullscreenBtn.addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(() => {});
