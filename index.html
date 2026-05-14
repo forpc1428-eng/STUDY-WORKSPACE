@@ -15,6 +15,7 @@
             --sidebar-hover: #e0e0e0;
             --btn-bg: #eeeeee;
             --btn-hover: #dddddd;
+            --error-color: #d9534f;
         }
 
         [data-theme="dark"] {
@@ -27,6 +28,7 @@
             --sidebar-hover: #333333;
             --btn-bg: #333333;
             --btn-hover: #444444;
+            --error-color: #ff6666;
         }
 
         * {
@@ -121,6 +123,12 @@
             background-color: var(--sidebar-hover);
         }
 
+        .error-msg {
+            color: var(--error-color);
+            padding: 15px 20px;
+            font-size: 14px;
+        }
+
         /* Overlay for mobile */
         #overlay {
             display: none;
@@ -146,30 +154,19 @@
         }
 
         #content-area {
-            white-space: pre-wrap; /* Formats text automatically, respects line breaks, wraps long lines */
+            white-space: pre-wrap;
             word-wrap: break-word;
-            font-size: 100%; /* Default zoom */
+            font-size: 100%; 
             line-height: 1.6;
             transition: font-size 0.2s ease;
         }
 
         /* Desktop Adjustments */
         @media (min-width: 768px) {
-            #sidebar {
-                left: 0; /* Sidebar always open on desktop */
-            }
-            main {
-                margin-left: 250px;
-                max-width: calc(100% - 250px);
-                padding: 40px;
-            }
-            #menu-btn {
-                display: none; /* Hide hamburger on desktop */
-            }
-            #overlay.active {
-                display: none; /* No overlay on desktop */
-            }
-            /* If sidebar is toggled closed on desktop */
+            #sidebar { left: 0; }
+            main { margin-left: 250px; max-width: calc(100% - 250px); padding: 40px; }
+            #menu-btn { display: none; }
+            #overlay.active { display: none; }
             body.sidebar-closed #sidebar { left: -250px; }
             body.sidebar-closed main { margin-left: auto; max-width: 900px; }
             body.sidebar-closed #menu-btn { display: block; }
@@ -200,16 +197,14 @@
     </nav>
 
     <main>
-        <div id="content-area">Please select a note from the menu.</div>
+        <div id="content-area">Please select a note from the menu on the left.</div>
     </main>
 
     <script>
         // ==========================================
-        // CONFIGURATION: CHANGE THESE TO YOUR DETAILS
+        // CONFIGURATION: JUST PASTE YOUR GITHUB LINK BELOW
         // ==========================================
-        const GITHUB_USERNAME = "YOUR_GITHUB_USERNAME"; // e.g., "johnsmith"
-        const REPOSITORY_NAME = "YOUR_REPOSITORY_NAME"; // e.g., "my-notes"
-        const BRANCH = "main"; // Usually "main" or "master"
+        const REPO_LINK = "https://github.com/USERNAME/REPOSITORY_NAME";
         // ==========================================
 
         // DOM Elements
@@ -223,7 +218,6 @@
         const themeToggleBtn = document.getElementById('theme-toggle');
         const fullscreenBtn = document.getElementById('fullscreen-btn');
 
-        // State variables
         let currentZoom = 100;
 
         // --- Sidebar Logic ---
@@ -239,13 +233,40 @@
         menuBtn.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
 
+        // --- Extract Username and Repo from Link ---
+        function getRepoInfo() {
+            try {
+                // Remove trailing slash if exists, and split by '/'
+                const cleanLink = REPO_LINK.replace(/\/$/, ''); 
+                const parts = cleanLink.split('/');
+                const repo = parts.pop();
+                const username = parts.pop();
+                return { username, repo };
+            } catch (e) {
+                return null;
+            }
+        }
+
         // --- Fetch Files from GitHub API ---
         async function fetchFileList() {
-            const apiUrl = `https://api.github.com/repos/${forpc1428-eng}/${STUDY-WORKSPACE}/contents?ref=${BRANCH}`;
+            const repoInfo = getRepoInfo();
+            
+            if (!repoInfo || !repoInfo.username || !repoInfo.repo || repoInfo.username === "USERNAME") {
+                fileList.innerHTML = '<li class="error-msg">Error: Please paste your real GitHub repository link into the REPO_LINK variable in the code.</li>';
+                return;
+            }
+
+            // By not specifying a branch, GitHub automatically uses your default branch (main/master)
+            const apiUrl = `https://github.com/forpc1428-eng/STUDY-WORKSPACE`;
             
             try {
                 const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error("Repository not found or API limit reached.");
+                
+                if (response.status === 404) {
+                    throw new Error("Repository not found. Is it set to Private? It must be Public.");
+                } else if (!response.ok) {
+                    throw new Error("GitHub API error. Check your repo link.");
+                }
                 
                 const data = await response.json();
                 
@@ -255,21 +276,20 @@
                 fileList.innerHTML = ''; // Clear loading text
 
                 if (txtFiles.length === 0) {
-                    fileList.innerHTML = '<li>No .txt files found.</li>';
+                    fileList.innerHTML = '<li>No .txt files found in this repo.</li>';
                     return;
                 }
 
                 txtFiles.forEach(file => {
                     const li = document.createElement('li');
-                    // Remove .txt for display
-                    li.textContent = file.name.replace('.txt', '');
+                    li.textContent = file.name.replace('.txt', ''); // Remove .txt for display
                     li.onclick = () => loadFile(file.download_url);
                     fileList.appendChild(li);
                 });
 
             } catch (error) {
                 console.error(error);
-                fileList.innerHTML = '<li>Error loading files. Check username/repo setup.</li>';
+                fileList.innerHTML = `<li class="error-msg">${error.message}</li>`;
             }
         }
 
@@ -280,6 +300,7 @@
 
             try {
                 const response = await fetch(url);
+                if (!response.ok) throw new Error("Failed to load text file.");
                 const text = await response.text();
                 contentArea.textContent = text;
             } catch (error) {
@@ -294,7 +315,7 @@
         });
 
         zoomOutBtn.addEventListener('click', () => {
-            if (currentZoom > 50) { // Minimum zoom limit
+            if (currentZoom > 50) { 
                 currentZoom -= 5;
                 contentArea.style.fontSize = `${currentZoom}%`;
             }
@@ -315,7 +336,7 @@
         fullscreenBtn.addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
-                    alert(`Error attempting to enable full-screen mode: ${err.message}`);
+                    alert(`Error: ${err.message}`);
                 });
             } else {
                 document.exitFullscreen();
