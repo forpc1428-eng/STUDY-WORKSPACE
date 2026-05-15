@@ -2,302 +2,196 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Study Notes</title>
-    <!-- Premium Font for UI and Reading -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Drive Workspace</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* OBSIDIAN GLASS THEME (Default) */
-            --bg-base: #050505;
-            --glass-bg: rgba(20, 20, 24, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-            
-            --text-main: #e2e2e6; /* Graphite Light */
-            --text-muted: #8b8b98; /* Graphite Dark */
-            
-            --btn-bg: rgba(255, 255, 255, 0.05);
-            --btn-hover: rgba(255, 255, 255, 0.1);
-            
-            --accent-glow: rgba(255, 255, 255, 0.15);
-            --accent-active: #ffffff;
-            --accent-text: #000000;
-            
-            --radius-large: 24px;
-            --radius-pill: 50px;
+            --bg-base: #050505; --glass-bg: rgba(20, 20, 24, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08); --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --text-main: #e2e2e6; --text-muted: #8b8b98; 
+            --btn-bg: rgba(255, 255, 255, 0.05); --btn-hover: rgba(255, 255, 255, 0.1);
+            --accent-glow: rgba(255, 255, 255, 0.15); --accent-active: #ffffff; --accent-text: #000000;
+            --radius-large: 24px; --radius-pill: 50px;
         }
 
-        [data-theme="pearl"] {
-            /* PEARL GLASS THEME (Light Mode) */
-            --bg-base: #f0f0f5;
-            --glass-bg: rgba(255, 255, 255, 0.65);
-            --glass-border: rgba(0, 0, 0, 0.1);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            
-            --text-main: #1a1a1c;
-            --text-muted: #6b6b78;
-            
-            --btn-bg: rgba(0, 0, 0, 0.05);
-            --btn-hover: rgba(0, 0, 0, 0.1);
-            
-            --accent-glow: rgba(0, 0, 0, 0.1);
-            --accent-active: #000000;
-            --accent-text: #ffffff;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); background-image: radial-gradient(circle at 15% 50%, rgba(70, 50, 120, 0.15), transparent 40%), radial-gradient(circle at 85% 30%, rgba(50, 90, 120, 0.15), transparent 40%); background-attachment: fixed; color: var(--text-main); overflow: hidden; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: var(--btn-hover); border-radius: 10px; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, transform 0.2s ease;
-        }
+        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
 
-        html { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background-color: var(--bg-base);
-            /* Ambient glowing orbs in the background */
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(70, 50, 120, 0.15), transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(50, 90, 120, 0.15), transparent 40%);
-            background-attachment: fixed;
-            color: var(--text-main);
-            overflow-x: hidden;
-            letter-spacing: -0.01em; /* Modern tight spacing */
-        }
-
-        /* Ultra-sleek Scrollbars */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--btn-hover); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-
-        /* Glassmorphism Reusable Class */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-        }
-
-        /* FLOATING HEADER */
-        header {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            height: 60px;
-            border-radius: var(--radius-pill);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 25px;
-            z-index: 1000;
-        }
-
-        #site-title { 
-            font-weight: 500; 
-            font-size: 1.1rem; 
-            letter-spacing: -0.02em;
-        }
+        header { position: fixed; top: 15px; left: 15px; right: 15px; height: 60px; border-radius: var(--radius-pill); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 1000; }
+        #site-title { font-weight: 500; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        
+        .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 10px #4ade80; animation: pulse 1.5s infinite; opacity: 0; transition: opacity 0.3s; }
+        .sync-dot.active { opacity: 1; }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.5; } }
 
         .header-left, .header-right { display: flex; align-items: center; gap: 8px; }
 
-        /* Pill Buttons */
-        button {
-            background-color: var(--btn-bg);
-            color: var(--text-main);
-            border: 1px solid transparent;
-            padding: 8px 16px;
-            border-radius: var(--radius-pill);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        button { background-color: var(--btn-bg); color: var(--text-main); border: 1px solid transparent; padding: 8px 16px; border-radius: var(--radius-pill); cursor: pointer; font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap;}
+        button:hover { background-color: var(--btn-hover); border-color: var(--accent-glow); }
+        
+        #upload-btn { background-color: rgba(70, 130, 180, 0.2); border-color: rgba(70, 130, 180, 0.5); }
+        #upload-btn:hover { background-color: rgba(70, 130, 180, 0.4); }
+        
+        #download-btn { background-color: rgba(46, 139, 87, 0.2); border-color: rgba(46, 139, 87, 0.5); display: none; }
+        #download-btn:hover { background-color: rgba(46, 139, 87, 0.4); }
 
-        button:hover { 
-            background-color: var(--btn-hover); 
-            border-color: var(--accent-glow);
-        }
-        button:active { transform: scale(0.95); }
-
-        #menu-btn { font-size: 18px; padding: 8px 12px; }
-
-        /* Curved Zoom Controls */
-        .zoom-controls {
-            display: flex;
-            align-items: center;
-            background-color: var(--btn-bg);
-            border-radius: var(--radius-pill);
-            padding: 2px;
-        }
-        .zoom-controls button { background: none; border-radius: var(--radius-pill); padding: 6px 12px; }
-        .zoom-controls button:hover { background-color: var(--btn-hover); }
+        .zoom-controls { display: flex; align-items: center; background-color: var(--btn-bg); border-radius: var(--radius-pill); padding: 2px; }
+        .zoom-controls button { background: none; padding: 6px 12px; }
         #zoom-display { font-size: 12px; font-weight: 600; min-width: 45px; text-align: center; color: var(--text-muted); }
 
-        /* FLOATING SIDEBAR */
-        #sidebar {
-            position: fixed;
-            top: 90px;
-            left: -320px;
-            width: 280px;
-            height: calc(100vh - 105px);
-            border-radius: var(--radius-large);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 999;
-        }
+        #sidebar { position: fixed; top: 90px; left: -320px; width: 280px; height: calc(100vh - 105px); border-radius: var(--radius-large); overflow: hidden; display: flex; flex-direction: column; transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 999; }
         #sidebar.open { left: 15px; }
 
-        /* Search Bar */
         .search-container { padding: 20px; border-bottom: 1px solid var(--glass-border); }
-        #search-bar {
-            width: 100%;
-            padding: 12px 20px;
-            border-radius: var(--radius-pill);
-            border: 1px solid var(--glass-border);
-            background-color: var(--btn-bg);
-            color: var(--text-main);
-            font-family: inherit;
-            font-size: 14px;
-            outline: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-        #search-bar::placeholder { color: var(--text-muted); }
-        #search-bar:focus { border-color: var(--text-muted); background-color: var(--btn-hover); }
+        #search-bar { width: 100%; padding: 12px 20px; border-radius: var(--radius-pill); border: 1px solid var(--glass-border); background-color: var(--btn-bg); color: var(--text-main); font-size: 14px; outline: none; }
 
-        /* File List */
-        .sidebar-scroll-area { overflow-y: auto; flex-grow: 1; padding: 10px; }
-        #file-list { list-style: none; }
-        #file-list li {
-            padding: 12px 18px;
-            cursor: pointer;
-            border-radius: 14px;
-            margin-bottom: 4px;
-            font-size: 14px;
-            font-weight: 400;
-            color: var(--text-muted);
-        }
-        #file-list li:hover:not(.active) { background-color: var(--btn-bg); color: var(--text-main); transform: translateX(4px); }
+        .sidebar-scroll-area { overflow-y: auto; flex-grow: 1; padding: 10px 10px 10px 5px; }
+        ul { list-style: none; }
+        .folder-group { margin-left: 15px; display: none; border-left: 1px solid var(--glass-border); padding-left: 5px;}
+        .folder-group.open { display: block; }
         
-        /* Active Note Highlight (Obsidian style - high contrast) */
-        #file-list li.active { 
-            background-color: var(--accent-active); 
-            color: var(--accent-text); 
-            font-weight: 500; 
-            box-shadow: 0 4px 15px var(--accent-glow);
+        .item-row { padding: 10px 12px; cursor: pointer; border-radius: 10px; margin-bottom: 2px; font-size: 14px; color: var(--text-muted); display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; }
+        .item-row:hover { background-color: var(--btn-bg); color: var(--text-main); }
+        .item-row.active { background-color: var(--accent-active); color: var(--accent-text); font-weight: 500; }
+        .icon { margin-right: 8px; font-size: 16px; }
+        .arrow { font-size: 10px; margin-right: 6px; transition: transform 0.2s; width: 12px; text-align: center; }
+        .folder-row.open .arrow { transform: rotate(90deg); }
+
+        #search-results { display: none; } #search-results .item-row { margin-left: 0; }
+        .skeleton { height: 35px; border-radius: 10px; margin-bottom: 5px; background: linear-gradient(90deg, var(--btn-bg) 25%, var(--btn-hover) 50%, var(--btn-bg) 75%); background-size: 200% 100%; animation: loadingSkeleton 1.5s infinite; }
+        @keyframes loadingSkeleton { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* FIXED IMAGE LOGO WATERMARK */
+        .watermark { padding: 15px; display: flex; justify-content: center; align-items: center; border-top: 1px solid var(--glass-border); user-select: none; pointer-events: none; }
+        .watermark img { width: 220px; height: auto; opacity: 0.9; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); transition: transform 0.3s; }
+
+        #overlay, #upload-modal, #loading-overlay { opacity: 0; pointer-events: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 998; backdrop-filter: blur(4px); transition: opacity 0.3s; }
+        #overlay.active, #upload-modal.active, #loading-overlay.active { opacity: 1; pointer-events: all; }
+
+        #upload-modal { display: flex; align-items: center; justify-content: center; z-index: 1001; }
+        .modal-box { width: 90%; max-width: 450px; border-radius: var(--radius-large); padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .modal-header { font-size: 1.2rem; font-weight: 500; color: var(--text-main); border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
+        .breadcrumb { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; display: flex; gap: 5px; align-items: center; }
+        .breadcrumb span { cursor: pointer; color: #60a5fa; }
+        .breadcrumb span:hover { text-decoration: underline; }
+        .modal-folder-list { background: rgba(0,0,0,0.2); border-radius: 10px; height: 200px; overflow-y: auto; padding: 10px; border: 1px solid var(--glass-border); }
+        .modal-folder { padding: 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .modal-folder:hover { background: var(--btn-bg); }
+        .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .modal-actions input { flex-grow: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--btn-bg); color: var(--text-main); outline: none; }
+        .btn-primary { background: var(--accent-active); color: var(--accent-text); }
+        
+        #loading-overlay { z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--glass-border); border-top-color: var(--text-main); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        main { position: absolute; top: 90px; bottom: 15px; right: 15px; left: 15px; transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; border-radius: var(--radius-large); background: var(--bg-base);}
+        
+        /* SIMPLE & CLEAN WELCOME SCREEN */
+        #placeholder { 
+            position: absolute; inset: 0; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; text-align: center;
+            color: var(--text-muted); z-index: 5;
+            background: var(--bg-base);
         }
+        #placeholder p { font-size: 1rem; margin-top: 15px; font-weight: 400; }
 
-        .error-msg { color: #ff6b6b; padding: 15px; font-size: 13px; }
+        #iframe-wrapper { width: 100%; height: 100%; transition: transform 0.25s ease-out; transform-origin: top center; background: white;}
+        #file-viewer { width: 100%; height: 100%; border: none; z-index: 2; display: none; background: white; }
 
-        /* Mobile Overlay */
-        #overlay {
-            opacity: 0; pointer-events: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 998; backdrop-filter: blur(4px); transition: opacity 0.4s ease;
-        }
-        #overlay.active { opacity: 1; pointer-events: all; }
-
-        /* MAIN CONTENT AREA */
-        main {
-            margin-top: 90px;
-            padding: 0 15px 15px 15px;
-            margin-left: auto; margin-right: auto;
-            max-width: 900px;
-            transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* Glass Note Card */
-        .note-card {
-            border-radius: var(--radius-large);
-            padding: 40px;
-            min-height: calc(100vh - 105px);
-        }
-
-        #content-area {
-            white-space: pre-wrap; word-wrap: break-word;
-            font-size: 100%; 
-            line-height: 1.8;
-            font-weight: 300; /* Sleeker reading weight */
-            color: var(--text-main);
-        }
-
-        /* Elegant Fade/Slide in */
-        .fade-in { animation: glideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes glideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Desktop Adjustments */
-        @media (min-width: 768px) {
-            #sidebar { left: 15px; }
-            main { margin-left: 310px; max-width: calc(100% - 310px); }
-            .note-card { padding: 50px 60px; max-width: 850px; margin: 0 auto; }
-            #menu-btn { display: none; }
-            #overlay.active { opacity: 0; pointer-events: none; }
-            
-            /* If toggled closed on desktop */
-            body.sidebar-closed #sidebar { left: -320px; }
-            body.sidebar-closed main { margin-left: auto; max-width: 900px; }
-            body.sidebar-closed #menu-btn { display: flex; }
-        }
-
-        /* Mobile Tweaks */
-        @media (max-width: 480px) {
-            header { padding: 0 15px; }
-            .header-right { gap: 4px; }
-            button { padding: 6px 12px; font-size: 12px; }
-            .zoom-controls button { padding: 6px 10px; }
+        @media (min-width: 768px) { #sidebar { left: 15px; } main { left: 310px; } #menu-btn { display: none; } #overlay.active { opacity: 0; pointer-events: none; } }
+        
+        /* FIX FOR MOBILE OVERFLOW - HIDES TEXT, KEEPS ICONS */
+        @media (max-width: 768px) { 
+            header { padding: 0 10px; }
             #site-title { display: none; } 
-            .note-card { padding: 25px 20px; }
+            .btn-text { display: none; } /* Hides words like "Upload" and "Download" */
+            button { padding: 6px 10px; font-size: 16px; } 
+            .zoom-controls button { padding: 6px 10px; } 
+            #zoom-display { min-width: 38px; }
         }
     </style>
 </head>
 <body>
 
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <h2 id="loading-status" style="font-weight: 400;">Processing...</h2>
+    </div>
+
+    <div id="upload-modal">
+        <div class="modal-box glass-panel">
+            <div class="modal-header">Select Destination</div>
+            <div class="breadcrumb" id="modal-breadcrumb"></div>
+            <div class="modal-folder-list" id="modal-folder-list"></div>
+            <div class="modal-actions" style="margin-top: 5px;">
+                <input type="text" id="new-folder-name" placeholder="New Folder Name...">
+                <button id="create-folder-btn" title="Create folder here">📁 <span class="btn-text">Create</span></button>
+            </div>
+            <div class="modal-actions" style="border-top: 1px solid var(--glass-border); padding-top: 15px; margin-top: 5px;">
+                <button id="cancel-upload-btn" style="flex:1;">Cancel</button>
+                <button id="confirm-upload-btn" class="btn-primary" style="flex:2;">⬆️ <span class="btn-text">Upload Here</span></button>
+                <input type="file" id="file-input" style="display: none;">
+            </div>
+        </div>
+    </div>
+
     <header class="glass-panel">
         <div class="header-left">
             <button id="menu-btn">☰</button>
-            <h2 id="site-title">StudySpace</h2>
+            <h2 id="site-title">Workspace <div class="sync-dot" id="sync-indicator" title="Syncing..."></div></h2>
         </div>
         <div class="header-right">
-            <button id="copy-btn" title="Copy Note">Copy</button>
             <div class="zoom-controls">
                 <button id="zoom-out" title="Zoom Out">-</button>
                 <span id="zoom-display">100%</span>
                 <button id="zoom-in" title="Zoom In">+</button>
             </div>
-            <button id="theme-toggle" title="Toggle Theme">◐</button>
-            <button id="fullscreen-btn" title="Reading Mode">⛶</button>
+            <button id="download-btn" title="Download Current File">⬇️ <span class="btn-text">Download</span></button>
+            <button id="upload-btn" title="Upload a File">⬆️ <span class="btn-text">Upload</span></button>
+            <button id="fullscreen-btn" title="Fullscreen">⛶</button>
         </div>
     </header>
 
     <div id="overlay"></div>
 
     <nav id="sidebar" class="glass-panel">
-        <div class="search-container">
-            <input type="text" id="search-bar" placeholder="Search notes...">
-        </div>
+        <div class="search-container"><input type="text" id="search-bar" placeholder="Search files..."></div>
         <div class="sidebar-scroll-area">
-            <ul id="file-list">
-                <li style="color: var(--text-muted); text-align: center; padding-top: 20px;">Initializing core...</li>
-            </ul>
+            <div id="skeleton-loader" style="display: none;">
+                <div class="skeleton"></div><div class="skeleton" style="width: 80%"></div><div class="skeleton" style="width: 90%"></div>
+            </div>
+            <div id="tree-container"></div>
+            <div id="search-results"></div>
+        </div>
+
+        <!-- The Image Logo -->
+        <div class="watermark">
+            <img src="https://ik.imagekit.io/22h7wv5o2/b___Ultra_Detailed_Ima.png?updatedAt=1778874059723" alt="Workspace Logo">
         </div>
     </nav>
 
-    <main>
-        <div class="glass-panel note-card">
-            <div id="content-area">Awaiting note selection...</div>
+    <main class="glass-panel">
+        <!-- SIMPLE WELCOME SCREEN -->
+        <div id="placeholder">
+            <!-- Minimalist Document SVG Icon -->
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <p>Select a file to preview</p>
+        </div>
+
+        <div id="iframe-wrapper">
+            <iframe id="file-viewer" src=""></iframe>
         </div>
     </main>
 
@@ -305,176 +199,202 @@
         // ==========================================
         // CONFIGURATION
         // ==========================================
-        const REPO_LINK = "https://github.com/forpc1428-eng/STUDY-WORKSPACE";
-        const CACHE_PREFIX = "study_glass_";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxT49Fn2pnZcp-msuVIO0k-tIJKx54btZGo8yRmC1d3i4hYHRlB8j2O0lsn0WulHESOag/exec"; 
+        const ROOT_FOLDER_ID = "1ztsTJCXPBFzIYeOLSyZkZebjlTYyB1JK";
+        const CACHE_KEY = "drive_tree_cache_v6";
         // ==========================================
+
+        let fullTreeData = [];
+        let allFlatFiles = []; 
+        let folderNavigationPath = []; 
+        let currentZoom = 100;
+        let activeFileId = null; 
 
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const menuBtn = document.getElementById('menu-btn');
-        const fileList = document.getElementById('file-list');
-        const contentArea = document.getElementById('content-area');
+        const treeContainer = document.getElementById('tree-container');
+        const searchResults = document.getElementById('search-results');
+        const skeletonLoader = document.getElementById('skeleton-loader');
+        const syncIndicator = document.getElementById('sync-indicator');
+        const fileViewer = document.getElementById('file-viewer');
+        const iframeWrapper = document.getElementById('iframe-wrapper');
+        const placeholder = document.getElementById('placeholder');
         const searchBar = document.getElementById('search-bar');
+        const downloadBtn = document.getElementById('download-btn');
         
-        const zoomInBtn = document.getElementById('zoom-in');
-        const zoomOutBtn = document.getElementById('zoom-out');
-        const zoomDisplay = document.getElementById('zoom-display');
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const fullscreenBtn = document.getElementById('fullscreen-btn');
-        const copyBtn = document.getElementById('copy-btn');
-
-        let currentZoom = 100;
-        let currentNoteName = "";
-        let allFiles = [];
-
-        // --- Sidebar & Search Logic ---
-        function toggleSidebar() {
-            if (window.innerWidth < 768) {
-                sidebar.classList.toggle('open');
-                overlay.classList.toggle('active');
-            } else {
-                document.body.classList.toggle('sidebar-closed');
-            }
+        // --- ZOOM LOGIC ---
+        function applyZoom() {
+            iframeWrapper.style.transform = `scale(${currentZoom / 100})`;
+            document.getElementById('zoom-display').textContent = `${currentZoom}%`;
         }
+        document.getElementById('zoom-in').addEventListener('click', () => { currentZoom += 10; applyZoom(); });
+        document.getElementById('zoom-out').addEventListener('click', () => { if (currentZoom > 50) { currentZoom -= 10; applyZoom(); }});
 
-        menuBtn.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', toggleSidebar);
-
-        searchBar.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const listItems = fileList.querySelectorAll('li');
-            listItems.forEach(li => {
-                const text = li.textContent.toLowerCase();
-                li.style.display = text.includes(searchTerm) ? 'block' : 'none';
-            });
+        // --- DOWNLOAD LOGIC ---
+        downloadBtn.addEventListener('click', () => {
+            if (!activeFileId) return;
+            const downloadUrl = `https://drive.google.com/uc?export=download&id=${activeFileId}`;
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         });
 
-        function getRepoInfo() {
-            try {
-                const cleanLink = REPO_LINK.replace(/\/$/, ''); 
-                const parts = cleanLink.split('/');
-                return { username: parts[parts.length - 2], repo: parts[parts.length - 1] };
-            } catch (e) { return null; }
+        function getIcon(mimeType) {
+            if (mimeType.includes('pdf')) return '📄';
+            if (mimeType.includes('image')) return '🖼️';
+            if (mimeType.includes('video')) return '🎥';
+            return '📄';
         }
 
-        function renderMenu(files) {
-            allFiles = files;
-            fileList.innerHTML = '';
-            if (files.length === 0) {
-                fileList.innerHTML = '<li style="text-align:center;">No .txt files found.</li>';
-                return;
-            }
-            files.forEach(file => {
-                const displayName = file.name.replace('.txt', '');
-                const li = document.createElement('li');
-                li.textContent = displayName;
-                if (displayName === currentNoteName) li.classList.add('active');
-                
-                li.onclick = () => {
-                    document.querySelectorAll('#file-list li').forEach(item => item.classList.remove('active'));
-                    li.classList.add('active');
-                    currentNoteName = displayName;
-                    loadFile(file);
-                };
-                fileList.appendChild(li);
-            });
+        // --- DOM RENDERING ---
+        function renderTreeData(data) {
+            allFlatFiles = [];
+            const fragment = document.createDocumentFragment();
+            buildTree(data, fragment);
+            treeContainer.innerHTML = '';
+            treeContainer.appendChild(fragment);
+            if(searchBar.value.trim() !== '') triggerSearch(searchBar.value);
         }
 
-        async function fetchFileList() {
-            const repoInfo = getRepoInfo();
-            if (!repoInfo) return;
+        function loadFile(fileId, element) {
+            document.querySelectorAll('.item-row').forEach(i => i.classList.remove('active'));
+            element.classList.add('active');
+            
+            activeFileId = fileId;
+            downloadBtn.style.display = 'flex';
+            placeholder.style.display = 'none'; // Hide welcome screen
 
-            const cachedMenu = localStorage.getItem(CACHE_PREFIX + 'menu');
-            if (cachedMenu) renderMenu(JSON.parse(cachedMenu));
+            // INSTANT LOAD: Remove all delays, let Google Drive handle the loading UI
+            fileViewer.style.display = 'block';
+            fileViewer.src = `https://drive.google.com/file/d/${fileId}/preview`;
+            currentZoom = 100; applyZoom(); // Reset Zoom for new file
+            
+            if (window.innerWidth < 768) { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+        }
 
-            const apiUrl = `https://api.github.com/repos/${repoInfo.username}/${repoInfo.repo}/contents/`;
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error("API error");
-                
-                const data = await response.json();
-                const txtFiles = data.filter(file => file.name.endsWith('.txt'));
-                
-                if (JSON.stringify(txtFiles) !== cachedMenu) {
-                    localStorage.setItem(CACHE_PREFIX + 'menu', JSON.stringify(txtFiles));
-                    renderMenu(txtFiles);
+        function buildTree(data, container) {
+            const ul = document.createElement('ul');
+            data.forEach(item => {
+                if (item.type === 'folder') {
+                    const folderRow = document.createElement('div'); folderRow.className = 'item-row folder-row';
+                    folderRow.innerHTML = `<span class="arrow">▶</span><span class="icon">📁</span>${item.name}`;
+                    const childrenContainer = document.createElement('div'); childrenContainer.className = 'folder-group';
+                    buildTree(item.children, childrenContainer); 
+                    folderRow.onclick = () => { folderRow.classList.toggle('open'); childrenContainer.classList.toggle('open'); };
+                    ul.appendChild(folderRow); ul.appendChild(childrenContainer);
+                } else {
+                    const fileRow = document.createElement('div'); fileRow.className = 'item-row';
+                    fileRow.innerHTML = `<span class="arrow"></span><span class="icon">${getIcon(item.mimeType)}</span>${item.name}`;
+                    fileRow.onclick = () => loadFile(item.id, fileRow);
+                    ul.appendChild(fileRow); allFlatFiles.push(item);
                 }
-            } catch (error) {
-                if (!cachedMenu) fileList.innerHTML = `<li class="error-msg">Connection lost.</li>`;
-            }
-        }
-
-        async function loadFile(file) {
-            if (window.innerWidth < 768) toggleSidebar(); 
-            window.scrollTo({ top: 0, behavior: 'smooth' }); 
-
-            contentArea.classList.remove('fade-in');
-            void contentArea.offsetWidth; 
-            contentArea.classList.add('fade-in');
-
-            const cacheKey = CACHE_PREFIX + 'file_' + file.name;
-            const cachedText = localStorage.getItem(cacheKey);
-
-            if (cachedText) {
-                contentArea.textContent = cachedText;
-            } else {
-                contentArea.textContent = "Decrypting text...";
-            }
-
-            try {
-                const response = await fetch(file.download_url + '?t=' + new Date().getTime());
-                if (!response.ok) throw new Error("Failed to load");
-                const latestText = await response.text();
-                
-                if (latestText !== cachedText) {
-                    contentArea.textContent = latestText;
-                    localStorage.setItem(cacheKey, latestText);
-                }
-            } catch (error) {
-                if (!cachedText) contentArea.textContent = "Failed to fetch data.";
-            }
-        }
-
-        // --- Copy Logic ---
-        copyBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(contentArea.textContent).then(() => {
-                const originalText = copyBtn.innerHTML;
-                copyBtn.innerHTML = "Copied!";
-                setTimeout(() => copyBtn.innerHTML = originalText, 2000);
             });
-        });
-
-        // --- Zoom Logic ---
-        function updateZoom() {
-            contentArea.style.fontSize = `${currentZoom}%`;
-            zoomDisplay.textContent = `${currentZoom}%`;
+            container.appendChild(ul);
         }
 
-        zoomInBtn.addEventListener('click', () => { currentZoom += 10; updateZoom(); });
-        zoomOutBtn.addEventListener('click', () => { if (currentZoom > 50) currentZoom -= 10; updateZoom(); });
-
-        // --- Theme Logic (Obsidian Glass -> Pearl Glass) ---
-        const currentTheme = localStorage.getItem(CACHE_PREFIX + 'theme') || 'obsidian';
-        document.documentElement.setAttribute('data-theme', currentTheme);
-
-        themeToggleBtn.addEventListener('click', () => {
-            let theme = document.documentElement.getAttribute('data-theme');
-            let newTheme = theme === 'obsidian' ? 'pearl' : 'obsidian';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem(CACHE_PREFIX + 'theme', newTheme);
-        });
-
-        // --- Fullscreen ---
-        fullscreenBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
+        // --- SYNC LOGIC ---
+        function initializeApp() {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                fullTreeData = JSON.parse(cached);
+                renderTreeData(fullTreeData);
             } else {
-                document.exitFullscreen();
+                skeletonLoader.style.display = 'block'; 
             }
+
+            setTimeout(async () => {
+                syncIndicator.classList.add('active'); 
+                try {
+                    const response = await fetch(SCRIPT_URL);
+                    const newData = await response.json();
+                    
+                    if (JSON.stringify(newData) !== cached) {
+                        fullTreeData = newData;
+                        localStorage.setItem(CACHE_KEY, JSON.stringify(newData));
+                        renderTreeData(fullTreeData); 
+                    }
+                } catch (error) { console.warn("Background sync failed."); } 
+                finally { skeletonLoader.style.display = 'none'; syncIndicator.classList.remove('active'); }
+            }, 100);
+        }
+
+        function triggerSearch(term) {
+            term = term.toLowerCase().trim();
+            if (term === '') { treeContainer.style.display = 'block'; searchResults.style.display = 'none'; return; } 
+            
+            treeContainer.style.display = 'none'; searchResults.style.display = 'block'; searchResults.innerHTML = '';
+            const matches = allFlatFiles.filter(f => f.name.toLowerCase().includes(term));
+            
+            if (matches.length === 0) { searchResults.innerHTML = '<div style="padding:15px; color:var(--text-muted); text-align:center;">No files found.</div>'; return; }
+            
+            const frag = document.createDocumentFragment();
+            matches.forEach(file => {
+                const row = document.createElement('div'); row.className = 'item-row';
+                row.innerHTML = `<span class="icon">${getIcon(file.mimeType)}</span>${file.name}`;
+                row.onclick = () => loadFile(file.id, row);
+                frag.appendChild(row);
+            });
+            searchResults.appendChild(frag);
+        }
+
+        searchBar.addEventListener('input', (e) => triggerSearch(e.target.value));
+
+        // --- UPLOAD MODAL LOGIC ---
+        const uploadModal = document.getElementById('upload-modal');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        document.getElementById('upload-btn').addEventListener('click', () => { folderNavigationPath = [{ id: ROOT_FOLDER_ID, name: "Home", children: fullTreeData }]; renderModal(); uploadModal.classList.add('active'); });
+        document.getElementById('cancel-upload-btn').addEventListener('click', () => uploadModal.classList.remove('active'));
+
+        function renderModal() {
+            const currentFolder = folderNavigationPath[folderNavigationPath.length - 1];
+            document.getElementById('modal-breadcrumb').innerHTML = '';
+            folderNavigationPath.forEach((node, index) => {
+                const span = document.createElement('span'); span.textContent = node.name;
+                span.onclick = () => { folderNavigationPath = folderNavigationPath.slice(0, index + 1); renderModal(); };
+                document.getElementById('modal-breadcrumb').appendChild(span);
+                if (index < folderNavigationPath.length - 1) document.getElementById('modal-breadcrumb').appendChild(document.createTextNode(' / '));
+            });
+            const list = document.getElementById('modal-folder-list'); list.innerHTML = '';
+            const subfolders = currentFolder.children.filter(item => item.type === 'folder');
+            if (subfolders.length === 0) list.innerHTML = '<div style="color:var(--text-muted); text-align:center; margin-top:20px;">No subfolders here.</div>';
+            else subfolders.forEach(folder => {
+                const div = document.createElement('div'); div.className = 'modal-folder'; div.innerHTML = `📁 ${folder.name}`;
+                div.onclick = () => { folderNavigationPath.push(folder); renderModal(); }; list.appendChild(div);
+            });
+        }
+
+        document.getElementById('create-folder-btn').addEventListener('click', async () => {
+            const fn = document.getElementById('new-folder-name').value.trim(); if (!fn) return;
+            uploadModal.classList.remove('active'); loadingOverlay.classList.add('active'); document.getElementById('loading-status').textContent = "Creating folder...";
+            try {
+                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "createFolder", folderName: fn, parentId: folderNavigationPath[folderNavigationPath.length - 1].id }) });
+                document.getElementById('new-folder-name').value = "";
+                localStorage.removeItem(CACHE_KEY); initializeApp();
+            } catch(e){} finally { loadingOverlay.classList.remove('active'); }
         });
 
-        // Initialize App
-        fetchFileList();
+        document.getElementById('confirm-upload-btn').addEventListener('click', () => document.getElementById('file-input').click());
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            uploadModal.classList.remove('active'); loadingOverlay.classList.add('active'); document.getElementById('loading-status').textContent = "Reading file...";
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                document.getElementById('loading-status').textContent = "Uploading to Drive...";
+                try {
+                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "upload", parentId: folderNavigationPath[folderNavigationPath.length - 1].id, filename: file.name, mimeType: file.type || 'application/octet-stream', base64: event.target.result.split(',')[1] }) });
+                    localStorage.removeItem(CACHE_KEY); initializeApp();
+                } catch(e){} finally { loadingOverlay.classList.remove('active'); document.getElementById('file-input').value = ""; }
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('menu-btn').addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('active'); });
+        overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); });
+        document.getElementById('fullscreen-btn').addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); });
+
+        initializeApp();
     </script>
 </body>
 </html>
