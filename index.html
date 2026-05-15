@@ -44,8 +44,41 @@
         .zoom-controls button { background: none; padding: 6px 12px; }
         #zoom-display { font-size: 12px; font-weight: 600; min-width: 45px; text-align: center; color: var(--text-muted); }
 
-        #sidebar { position: fixed; top: 90px; left: -320px; width: 280px; height: calc(100vh - 105px); border-radius: var(--radius-large); overflow: hidden; display: flex; flex-direction: column; transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 999; }
-        #sidebar.open { left: 15px; }
+#sidebar {
+    position: fixed;
+    top: 90px;
+    left: -320px;
+    width: 280px;
+
+    /* MOBILE SAFE HEIGHT FIX */
+    height: calc(100dvh - 105px);
+    max-height: calc(100dvh - 105px);
+
+    border-radius: var(--radius-large);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 999;
+}
+
+@supports not (height: 100dvh) {
+    #sidebar {
+        height: calc(100vh - 105px);
+        max-height: calc(100vh - 105px);
+    }
+}
+
+body {
+    overflow: hidden;
+    height: 100dvh;
+}
+
+.sidebar-scroll-area {
+    overflow-y: auto;
+    flex-grow: 1;
+    min-height: 0;
+}        #sidebar.open { left: 15px; }
 
         .search-container { padding: 20px; border-bottom: 1px solid var(--glass-border); }
         #search-bar { width: 100%; padding: 12px 20px; border-radius: var(--radius-pill); border: 1px solid var(--glass-border); background-color: var(--btn-bg); color: var(--text-main); font-size: 14px; outline: none; }
